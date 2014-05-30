@@ -1,5 +1,6 @@
 <?php
-	define("USER_TABLE", "user");
-	define("TEAM_TABLE", "team");
-	define("TEAM_USER2TEAM_TABLE", "user2team");
+	define("USER_TABLE", "Users");
+	define("SESSION_TABLE", "Session");
+	define("PROJECT_TABLE", "Projects");
+	define("USERSINPROJECTS_TABLE", "UsersInProjects");
 ?>

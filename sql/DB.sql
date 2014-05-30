@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.5.2
+-- version 3.4.11.1deb2
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 12. Mai 2014 um 20:50
--- Server Version: 5.5.27
--- PHP-Version: 5.4.6
+-- Erstellungszeit: 31. Mai 2014 um 11:10
+-- Server Version: 5.5.37
+-- PHP-Version: 5.4.4-14+deb7u9
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,51 +17,105 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Datenbank: `storyboard`
+-- Datenbank: `paperdreamer`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `team`
+-- Tabellenstruktur für Tabelle `Admins`
 --
 
-CREATE TABLE IF NOT EXISTS `team` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `ownerID` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id`)
+CREATE TABLE IF NOT EXISTS `Admins` (
+  `UserID` int(11) NOT NULL,
+  `Deleteable` tinyint(1) NOT NULL,
+  PRIMARY KEY (`UserID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Projects`
+--
+
+CREATE TABLE IF NOT EXISTS `Projects` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(255) NOT NULL DEFAULT 'New Project',
+  `Description` text,
+  `Approved` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `user`
+-- Tabellenstruktur für Tabelle `Session`
 --
 
-CREATE TABLE IF NOT EXISTS `user` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(265) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  `token` varchar(255) NOT NULL,
-  `expiration` datetime NOT NULL,
-  `suspended` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `Name` (`name`)
+CREATE TABLE IF NOT EXISTS `Session` (
+  `UserID` int(11) NOT NULL,
+  `Token` varchar(255) NOT NULL,
+  `Expiration` datetime NOT NULL,
+  PRIMARY KEY (`UserID`),
+  UNIQUE KEY `Token` (`Token`),
+  KEY `UserID` (`UserID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Users`
+--
+
+CREATE TABLE IF NOT EXISTS `Users` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Name` varchar(255) NOT NULL,
+  `Fullname` varchar(255) NOT NULL,
+  `Email` varchar(255) NOT NULL,
+  `PasswordHash` text NOT NULL,
+  `GravatarEmail` varchar(255) NOT NULL,
+  `Suspended` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `user2team`
+-- Tabellenstruktur für Tabelle `UsersInProjects`
 --
 
-CREATE TABLE IF NOT EXISTS `user2team` (
-  `userID` int(10) unsigned NOT NULL,
-  `teamID` int(10) unsigned NOT NULL,
-  `role` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`userID`,`teamID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+CREATE TABLE IF NOT EXISTS `UsersInProjects` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `UserID` int(11) NOT NULL,
+  `ProjectID` int(11) NOT NULL,
+  `Role` enum('Director','Supervisor','Artist','Observer') NOT NULL,
+  PRIMARY KEY (`ID`),
+  KEY `UserID` (`UserID`),
+  KEY `ProjectID` (`ProjectID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+--
+-- Constraints der exportierten Tabellen
+--
+
+--
+-- Constraints der Tabelle `Admins`
+--
+ALTER TABLE `Admins`
+  ADD CONSTRAINT `Admins_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `Session`
+--
+ALTER TABLE `Session`
+  ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `UsersInProjects`
+--
+ALTER TABLE `UsersInProjects`
+  ADD CONSTRAINT `UsersInProjects_ibfk_2` FOREIGN KEY (`ProjectID`) REFERENCES `Projects` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `UsersInProjects_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `Users` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
