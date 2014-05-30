@@ -77,16 +77,7 @@
 			$parameters[":userID"] = $userID;
 			$parameters[":username"] = $newUsername; // TODO: html entities?!
 
-			$this->DB->query("UPDATE " . USER_TABLE . " SET name = :username WHERE id = :userID");
-		}
-
-		public function getTeams () {
-			if ($this->checkLoginState()) {
-				$parameters = Array();
-				$parameters[":userID"] = $userdata["id"];
-
-				$this->DB->getList("SELECT * FROM " . TEAM_TABLE . ""); // TODO: Implement SQL, for example get the teammembers and their role
-			}
+			$this->DB->query("UPDATE " . USER_TABLE . " SET Name = :username WHERE ID = :userID");
 		}
 
 		public function getLoginState() {
