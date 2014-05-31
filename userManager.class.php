@@ -82,7 +82,7 @@
 			$this->DB->query("UPDATE " . USER_TABLE . " SET Name = :username WHERE ID = :userID");
 		}
 
-		public function getLoginState() {
+		public function getLoginState () {
 			return $this->checkLoginState();
 		}
 
@@ -139,7 +139,7 @@
 			// TODO
 			// compare session token and db token
 			// see if token is expired (ONLY BY DB, NOT THE SESSION)
-			if (isset($_SESSION["userdata"]) && isset($_SESSION["userdata"]["token"])) {
+			if (isset($_SESSION["userdata"], $_SESSION["userdata"]["token"])) {
 				// TODO: is the token still valid?
 				$parameters = Array();
 				$parameters[":userID"] = $_SESSION["userdata"]["id"];
