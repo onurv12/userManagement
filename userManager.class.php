@@ -32,7 +32,7 @@
 
 			// If userdata was found, apply it to the session
 			if ($userdata) {
-				$userdata["token"] = $this->updateToken($userdata["ID"]);
+				$userdata["Token"] = $this->updateToken($userdata["ID"]);
 				$_SESSION["userdata"] = $userdata;
 
 				return true;
@@ -105,9 +105,19 @@
 			$parameters[":token"] = $this->generateToken();
 			$parameters[":expiration"] = $this->computeExpiration();
 
-			$this->DB->query("UPDATE " . SESSION_TABLE . " SET Token = :token, Expiration = :expiration WHERE UserID = :userID", $parameters);
-
+			if ($this->tokenExists($userID))
+				$this->DB->query("UPDATE " . SESSION_TABLE . " SET Token = :token, Expiration = :expiration WHERE UserID = :userID", $parameters);
+			else 
+				$this->DB->query("INSERT INTO " . SESSION_TABLE . " (UserID, Token, Expiration) VALUES (:userID, :token, :expiration)", $parameters);
 			return $parameters[":token"];
+		}
+
+		private function tokenExists ($userID) {
+			$parameters = Array();
+			$parameters[":userID"] = $userID;
+
+			$result = $this->DB->getRow("SELECT EXISTS(SELECT * FROM Session WHERE UserID = :userID)", $parameters);
+			return array_values($result)[0];
 		}
 
 		private function computeExpiration () {
@@ -139,14 +149,14 @@
 			// TODO
 			// compare session token and db token
 			// see if token is expired (ONLY BY DB, NOT THE SESSION)
-			if (isset($_SESSION["userdata"], $_SESSION["userdata"]["token"])) {
+			if (isset($_SESSION["userdata"], $_SESSION["userdata"]["Token"])) {
 				// TODO: is the token still valid?
 				$parameters = Array();
-				$parameters[":userID"] = $_SESSION["userdata"]["id"];
+				$parameters[":userID"] = $_SESSION["userdata"]["ID"];
 
 				$result = $this->DB->getRow("SELECT Token, Expiration FROM " . SESSION_TABLE . " WHERE UserID = :userID", $parameters);
 
-				if (is_array($result) && $result["token"] == $_SESSION["userdata"]["token"] && $this->checkExpiration($result["expiration"])) {
+				if (is_array($result) && $result["Token"] == $_SESSION["userdata"]["Token"] && $this->checkExpiration($result["Expiration"])) {
 					return true;
 				} 
 			}
