@@ -28,11 +28,11 @@
 			$parameters[":password"] = $this->hash($password);
 			
 			// Get the user data
-			$userdata = $this->DB->getRow("SELECT * FROM " . USER_TABLE . " WHERE name = :username AND password = :password", $parameters);
+			$userdata = $this->DB->getRow("SELECT * FROM " . USER_TABLE . " WHERE Name = :username AND PasswordHash = :password", $parameters);
 
 			// If userdata was found, apply it to the session
 			if ($userdata) {
-				$userdata["token"] = $this->updateToken($userdata["id"]);
+				$userdata["token"] = $this->updateToken($userdata["ID"]);
 				$_SESSION["userdata"] = $userdata;
 
 				return true;
@@ -47,28 +47,30 @@
 
 			if ($_SESSION["userdata"]) {
 				// set a new token (which invalidates the old one)
-				$this->updateToken($_SESSION["userdata"]["id"]);
+				$this->updateToken($_SESSION["userdata"]["ID"]);
 				// and remove the userdata from the session
 				unset($_SESSION["userdata"]);
 			}
 		}
 
-		public function createUser ($username, $password, $email, $fulllname) {
+		public function createUser ($username, $fullname, $password, $email, $gravatarEmail) {
 			// check if the username or email adress is already registered
 			$parameters = Array();
 			$parameters[":username"] = $username;
-			$parameters[":password"] = $this->hash($password);
-			$parameters[":email"] = $this->$email;
+			$parameters[":fullname"] = $fullname;
+			$parameters[":passwordHash"] = $this->hash($password);
+			$parameters[":email"] = $email;
+			$parameters[":gravatarEmail"] = $gravatarEmail;
 
-			$this->DB->query("INSERT INTO " . USER_TABLE . " (name, password, email, suspended) VALUES (:username, :password, :email, false)");
+			$this->DB->query("INSERT INTO " . USER_TABLE . " (Name, Fullname, PasswordHash, Email, GravatarEmail) VALUES (:username, :fullname, :passwordHash, :email, :gravatarEmail)");
 		}
 
 		public function changePassword ($userID, $newPassword) {
 			$parameters = Array();
 			$parameters[":userID"] = $userID;
-			$parameters[":password"] = $this->hash($newPassword);
+			$parameters[":passwordHash"] = $this->hash($newPassword);
 
-			$this->DB->query("UPDATE " . USER_TABLE . " SET password = :password WHERE id = :userID");
+			$this->DB->query("UPDATE " . USER_TABLE . " SET PasswordHash = :passwordHash WHERE ID = :userID");
 		}
 
 		public function changeUsername ($userID, $newUsername) {
@@ -77,19 +79,10 @@
 			$parameters[":userID"] = $userID;
 			$parameters[":username"] = $newUsername; // TODO: html entities?!
 
-			$this->DB->query("UPDATE " . USER_TABLE . " SET name = :username WHERE id = :userID");
+			$this->DB->query("UPDATE " . USER_TABLE . " SET Name = :username WHERE ID = :userID");
 		}
 
-		public function getTeams () {
-			if ($this->checkLoginState()) {
-				$parameters = Array();
-				$parameters[":userID"] = $userdata["id"];
-
-				$this->DB->getList("SELECT * FROM " . TEAM_TABLE . ""); // TODO: Implement SQL, for example get the teammembers and their role
-			}
-		}
-
-		public function getLoginState() {
+		public function getLoginState () {
 			return $this->checkLoginState();
 		}
 
@@ -112,7 +105,7 @@
 			$parameters[":token"] = $this->generateToken();
 			$parameters[":expiration"] = $this->computeExpiration();
 
-			$this->DB->query("UPDATE " . USER_TABLE . " SET token = :token, expiration = :expiration WHERE id = :userID", $parameters);
+			$this->DB->query("UPDATE " . SESSION_TABLE . " SET Token = :token, Expiration = :expiration WHERE UserID = :userID", $parameters);
 
 			return $parameters[":token"];
 		}
@@ -139,19 +132,19 @@
 			$parameters = Array();
 			$parameters[":userID"];
 
-			return $this->dbWrapper("SELECT * FROM " . USER_TABLE . " WHERE id = :userID");
+			return $this->dbWrapper("SELECT * FROM " . USER_TABLE . " WHERE ID = :userID");
 		}
 
 		private function checkLoginState () {
 			// TODO
 			// compare session token and db token
 			// see if token is expired (ONLY BY DB, NOT THE SESSION)
-			if (isset($_SESSION["userdata"]) && isset($_SESSION["userdata"]["token"])) {
+			if (isset($_SESSION["userdata"], $_SESSION["userdata"]["token"])) {
 				// TODO: is the token still valid?
 				$parameters = Array();
 				$parameters[":userID"] = $_SESSION["userdata"]["id"];
 
-				$result = $this->DB->getRow("SELECT token, expiration FROM " . USER_TABLE . " WHERE id = :userID", $parameters);
+				$result = $this->DB->getRow("SELECT Token, Expiration FROM " . SESSION_TABLE . " WHERE UserID = :userID", $parameters);
 
 				if (is_array($result) && $result["token"] == $_SESSION["userdata"]["token"] && $this->checkExpiration($result["expiration"])) {
 					return true;
