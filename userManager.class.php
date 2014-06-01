@@ -86,6 +86,13 @@
 			return $this->checkLoginState();
 		}
 
+		public function getSession () {
+			if ($this->checkLoginState)
+				return $_SESSION["userdata"];
+			else 
+				return false;
+		}
+
 		/// Internal functions ///
 		// TODO: Can we replace this hash function by something better?
 		private function hash ($value) {
