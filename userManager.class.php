@@ -62,7 +62,7 @@
 			$parameters[":email"] = $email;
 			$parameters[":gravatarEmail"] = $gravatarEmail;
 
-			$this->DB->query("INSERT INTO " . USER_TABLE . " (Name, Fullname, PasswordHash, Email, GravatarEmail) VALUES (:username, :fullname, :passwordHash, :email, :gravatarEmail)");
+			$this->DB->query("INSERT INTO " . USER_TABLE . " (Name, Fullname, PasswordHash, Email, GravatarEmail) VALUES (:username, :fullname, :passwordHash, :email, :gravatarEmail)", $parameters);
 		}
 
 		public function changePassword ($userID, $newPassword) {
