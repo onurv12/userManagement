@@ -32,6 +32,10 @@
 
 			// If userdata was found, apply it to the session
 			if ($userdata) {
+				if ($userdata["Suspended"] == 1) {
+					throw new Exception("User suspended");
+				}
+
 				$userdata["Token"] = $this->updateToken($userdata["ID"]);
 				$_SESSION["userdata"] = $userdata;
 
