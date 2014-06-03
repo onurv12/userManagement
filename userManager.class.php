@@ -62,7 +62,7 @@
 			$parameters[":email"] = $email;
 			$parameters[":gravatarEmail"] = $gravatarEmail;
 
-			$this->DB->query("INSERT INTO " . USER_TABLE . " (Name, Fullname, PasswordHash, Email, GravatarEmail) VALUES (:username, :fullname, :passwordHash, :email, :gravatarEmail)");
+			$this->DB->query("INSERT INTO " . USER_TABLE . " (Name, Fullname, PasswordHash, Email, GravatarEmail) VALUES (:username, :fullname, :passwordHash, :email, :gravatarEmail)", $parameters);
 		}
 
 		public function changePassword ($userID, $newPassword) {
@@ -81,9 +81,35 @@
 
 			$this->DB->query("UPDATE " . USER_TABLE . " SET Name = :username WHERE ID = :userID");
 		}
+		
+		public function activateUser ($username) {
+			$parameters = Array();
+			$parameters[":username"] = $username;
+
+			$this->DB->query("UPDATE " . USER_TABLE . " SET Suspended = 0 WHERE Name = :username", $parameters);
+		}
 
 		public function getLoginState () {
 			return $this->checkLoginState();
+		}
+		
+		public function getIsLoggedInAsAdministrator () {
+			if (!$this->getLoginState())
+				return false;
+				
+			$parameters = Array();
+			$parameters[":userID"] = $_SESSION["userdata"]["ID"];
+				
+			$result = $this->DB->getRow("SELECT EXISTS(SELECT * FROM Admins WHERE UserID = :userID)", $parameters);
+			return array_values($result)[0];
+		}
+		
+		public function getAllActiveUsers() {
+			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail FROM " . USER_TABLE . " WHERE Suspended=0");
+		}
+		
+		public function getAllSuspendedUsers() {
+			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail FROM " . USER_TABLE . " WHERE Suspended=1");
 		}
 
 		/// Internal functions ///
