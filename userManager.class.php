@@ -32,6 +32,10 @@
 
 			// If userdata was found, apply it to the session
 			if ($userdata) {
+				if ($userdata["Suspended"] == 1) {
+					throw new Exception("User suspended");
+				}
+
 				$userdata["Token"] = $this->updateToken($userdata["ID"]);
 				$_SESSION["userdata"] = $userdata;
 
@@ -62,7 +66,7 @@
 			$parameters[":email"] = $email;
 			$parameters[":gravatarEmail"] = $gravatarEmail;
 
-			$this->DB->query("INSERT INTO " . USER_TABLE . " (Name, Fullname, PasswordHash, Email, GravatarEmail) VALUES (:username, :fullname, :passwordHash, :email, :gravatarEmail)");
+			$this->DB->query("INSERT INTO " . USER_TABLE . " (Name, Fullname, PasswordHash, Email, GravatarEmail) VALUES (:username, :fullname, :passwordHash, :email, :gravatarEmail)", $parameters);
 		}
 
 		public function changePassword ($userID, $newPassword) {
@@ -84,6 +88,13 @@
 
 		public function getLoginState () {
 			return $this->checkLoginState();
+		}
+
+		public function getSession () {
+			if ($this->checkLoginState)
+				return $_SESSION["userdata"];
+			else 
+				return false;
 		}
 
 		/// Internal functions ///
