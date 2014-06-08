@@ -91,7 +91,7 @@
 		}
 
 		public function getSession () {
-			if ($this->checkLoginState)
+			if ($this->checkLoginState())
 				return $_SESSION["userdata"];
 			else 
 				return false;
