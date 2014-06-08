@@ -28,7 +28,7 @@
 			$parameters[":password"] = $this->hash($password);
 			
 			// Get the user data
-			$userdata = $this->DB->getRow("SELECT * FROM " . USER_TABLE . " WHERE Name = :username AND PasswordHash = :password", $parameters);
+			$userdata = $this->DB->getRow("SELECT ID, Name, Fullname, Suspended, EXISTS(SELECT " . USER_TABLE . ".ID FROM " . ADMIN_TABLE . " WHERE " . USER_TABLE . ".ID = " . ADMIN_TABLE . ".UserID) AS isAdmin FROM " . USER_TABLE ." WHERE Name = :username AND PasswordHash = :password", $parameters);
 
 			// If userdata was found, apply it to the session
 			if ($userdata) {
@@ -39,7 +39,7 @@
 				$userdata["Token"] = $this->updateToken($userdata["ID"]);
 				$_SESSION["userdata"] = $userdata;
 
-				return true;
+				return $userdata;
 			} else {
 				return false;
 			}
@@ -91,7 +91,7 @@
 		}
 
 		public function getSession () {
-			if ($this->checkLoginState)
+			if ($this->checkLoginState())
 				return $_SESSION["userdata"];
 			else 
 				return false;
