@@ -28,14 +28,18 @@
 			$parameters[":password"] = $this->hash($password);
 			
 			// Get the user data
-			$userdata = $this->DB->getRow("SELECT * FROM " . USER_TABLE . " WHERE Name = :username AND PasswordHash = :password", $parameters);
+			$userdata = $this->DB->getRow("SELECT ID, Name, Fullname, Suspended, EXISTS(SELECT " . USER_TABLE . ".ID FROM " . ADMIN_TABLE . " WHERE " . USER_TABLE . ".ID = " . ADMIN_TABLE . ".UserID) AS isAdmin FROM " . USER_TABLE ." WHERE Name = :username AND PasswordHash = :password", $parameters);
 
 			// If userdata was found, apply it to the session
 			if ($userdata) {
+				if ($userdata["Suspended"] == 1) {
+					throw new Exception("User suspended");
+				}
+
 				$userdata["Token"] = $this->updateToken($userdata["ID"]);
 				$_SESSION["userdata"] = $userdata;
 
-				return true;
+				return $userdata;
 			} else {
 				return false;
 			}
@@ -110,6 +114,13 @@
 		
 		public function getAllSuspendedUsers() {
 			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail, (Admins.Deleteable IS NOT NULL) AS Admin  FROM " . USER_TABLE . " LEFT JOIN " . ADMIN_TABLE . " ON Users.ID = Admins.UserID WHERE Suspended=1");
+		}
+
+		public function getSession () {
+			if ($this->checkLoginState())
+				return $_SESSION["userdata"];
+			else 
+				return false;
 		}
 
 		/// Internal functions ///
