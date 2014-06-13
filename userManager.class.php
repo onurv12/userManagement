@@ -85,9 +85,24 @@
 
 			$this->DB->query("UPDATE " . USER_TABLE . " SET Name = :username WHERE ID = :userID");
 		}
+		
+		public function activateUser ($username) {
+			$parameters = Array();
+			$parameters[":username"] = $username;
+
+			$this->DB->query("UPDATE " . USER_TABLE . " SET Suspended = 0 WHERE Name = :username", $parameters);
+		}
 
 		public function getLoginState () {
 			return $this->checkLoginState();
+		}
+		
+		public function getAllActiveUsers() {
+			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail, (Admins.Deleteable IS NOT NULL) AS Admin FROM " . USER_TABLE . " LEFT JOIN " . ADMIN_TABLE . " ON Users.ID = Admins.UserID WHERE Suspended=0");
+		}
+		
+		public function getAllSuspendedUsers() {
+			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail, (Admins.Deleteable IS NOT NULL) AS Admin  FROM " . USER_TABLE . " LEFT JOIN " . ADMIN_TABLE . " ON Users.ID = Admins.UserID WHERE Suspended=1");
 		}
 
 		public function getSession () {
