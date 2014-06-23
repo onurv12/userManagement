@@ -178,7 +178,7 @@
 			return (($now->getTimestamp() - $date->getTimestamp()) < 0); // negative value if $date is in the future
 		}
 
-		private function getUserData ($userID) {
+		public function getUserData ($userID) {
 			$parameters = Array();
 			$parameters[":userID"];
 
