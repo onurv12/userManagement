@@ -180,9 +180,9 @@
 
 		public function getUserData ($userID) {
 			$parameters = Array();
-			$parameters[":userID"];
+			$parameters[":userID"] = $userID;
 
-			return $this->dbWrapper("SELECT * FROM " . USER_TABLE . " WHERE ID = :userID");
+			return $this->DB->getRow("SELECT * FROM " . USER_TABLE . " WHERE ID = :userID", $parameters);
 		}
 
 		private function checkLoginState () {
