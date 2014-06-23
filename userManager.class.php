@@ -93,14 +93,14 @@
 			$this->DB->query("UPDATE " . USER_TABLE . " SET Suspended = 0 WHERE Name = :username", $parameters);
 			
 			// Returning the affected user's ID	
-			return $this->getUserID();
+			return $this->getUserID($username);
 		}
 
 		public function getUserID ($username) {
 			$parameters = Array();
 			$parameters[":Username"] = $username;
 
-			$result = $this->DB->getRow("SELECT ID FROM " . USER_TABLE . " WHERE Username = :Username", $parameters);
+			$result = $this->DB->getRow("SELECT ID FROM " . USER_TABLE . " WHERE Name = :Username", $parameters);
 			
 			if (isset($result["ID"]))
 				return $result["ID"];
