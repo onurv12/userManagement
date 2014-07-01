@@ -93,17 +93,17 @@
 			$this->DB->query("UPDATE " . USER_TABLE . " SET Suspended = 0 WHERE Name = :username", $parameters);
 			
 			// Returning the affected user's ID	
-			return $this->getUserID();
+			return $this->getUserID($username);
 		}
 
 		public function getUserID ($username) {
 			$parameters = Array();
 			$parameters[":Username"] = $username;
 
-			$result = $this->DB->getRow("SELECT ID FROM " . USER_TABLE . " WHERE Username = :Username", $parameters);
+			$result = $this->DB->getRow("SELECT ID FROM " . USER_TABLE . " WHERE Name = :Username", $parameters);
 			
-			if (isset($result["ID"])
-				return $return["ID"];
+			if (isset($result["ID"]))
+				return $result["ID"];
 			else
 				return false;
 		}
@@ -178,11 +178,11 @@
 			return (($now->getTimestamp() - $date->getTimestamp()) < 0); // negative value if $date is in the future
 		}
 
-		private function getUserData ($userID) {
+		public function getUserData ($userID) {
 			$parameters = Array();
-			$parameters[":userID"];
+			$parameters[":userID"] = $userID;
 
-			return $this->dbWrapper("SELECT * FROM " . USER_TABLE . " WHERE ID = :userID");
+			return $this->DB->getRow("SELECT * FROM " . USER_TABLE . " WHERE ID = :userID", $parameters);
 		}
 
 		private function checkLoginState () {
