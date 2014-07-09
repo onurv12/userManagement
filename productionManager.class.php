@@ -1,7 +1,7 @@
 <?php
 	require_once("../userManagement/config.php");
 
-	class projectManager {
+	class productionManager {
 		private $DB;
 
 		public function __construct ($DB) {
@@ -65,11 +65,10 @@
 		}
 
 		// Gets the projects the user is associated with and the roles he/she has // TODO: come up with a better name for this method
-		public function getUsersProjects ($userID) {
+		public function getBelongedProjects ($userID) {
 			$parameters = Array();
 			$parameters[":userID"] = $userID;
-
-			return $this->DB->getList("SELECT * FROM u2p, p WHERE u2t.UserID = :userID FROM " . USERSINPROJECTS_TABLE . " u2p INNER JOIN " . PROJECT_TABLE . " p ON u2p.ProjectID = p.ID", $parameters);
+			return $this->DB->getList("SELECT Name, Description FROM " . PROJECT_TABLE . " LEFT JOIN " . USERSINPROJECTS_TABLE . " ON Projects.ID = UsersInProjects.ProjectID WHERE UserID = :userID", $parameters);
 		}
 	}
 ?>
