@@ -8,8 +8,8 @@
 			$this->DB = $DB;
 		}
 
-		public function getAll () {
-			$this->DB->getList("SELECT * FROM " . PROJECT_TABLE);
+		public function getAllProjects () {
+			return $this->DB->getList("SELECT * FROM " . PROJECT_TABLE);
 		}
 
 		public function remove ($projectID) {
