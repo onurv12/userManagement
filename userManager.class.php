@@ -205,6 +205,11 @@
 			return false;
 		}
 		
+		//Checks if the current user is an administrator
+		public function checkAdmin(){
+			return (bool) $this->getSession()["isAdmin"];
+		}
+		
 		//Promotes or demotes a user according to the given role(0=user, 1=admin, 2=god)
 		public function changeRole($userID, $role) {
 			$currentUserID = $this->getSession()["ID"];
