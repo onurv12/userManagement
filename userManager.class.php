@@ -114,7 +114,7 @@
 		}
 		
 		public function getAllActiveUsers() {
-			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail, (Admins.Deleteable IS NOT NULL) AS Admin FROM " . USER_TABLE . " LEFT JOIN " . ADMIN_TABLE . " ON Users.ID = Admins.UserID WHERE Suspended=0");
+			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail, Deleteable, (Admins.Deleteable IS NOT NULL) AS Admin FROM " . USER_TABLE . " LEFT JOIN " . ADMIN_TABLE . " ON Users.ID = Admins.UserID WHERE Suspended=0");
 		}
 		
 		public function getAllSuspendedUsers() {
