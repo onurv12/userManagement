@@ -68,7 +68,7 @@
 		public function getBelongedProjects ($userID) {
 			$parameters = Array();
 			$parameters[":userID"] = $userID;
-			return $this->DB->getList("SELECT Name, Description FROM " . PROJECT_TABLE . " LEFT JOIN " . USERSINPROJECTS_TABLE . " ON Projects.ID = UsersInProjects.ProjectID WHERE UserID = :userID", $parameters);
+			return $this->DB->getList("SELECT * FROM " . PROJECT_TABLE . " LEFT JOIN " . USERSINPROJECTS_TABLE . " ON Projects.ID = UsersInProjects.ProjectID WHERE UserID = :userID", $parameters);
 		}
 	}
 ?>
