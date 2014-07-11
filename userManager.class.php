@@ -2,6 +2,7 @@
 	session_start();
 	
 	require_once "../userManagement/config.php";	// TODO: This might be a problem later, we have to solve. I think we should specify, that the user has to migrate some settings into his config file in his root folder.
+	require "../userManagement/permissionManager.class.php";
 
 	class userManager {
 		// A dbWrapper instance
@@ -113,7 +114,7 @@
 		}
 		
 		public function getAllActiveUsers() {
-			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail, (Admins.Deleteable IS NOT NULL) AS Admin FROM " . USER_TABLE . " LEFT JOIN " . ADMIN_TABLE . " ON Users.ID = Admins.UserID WHERE Suspended=0");
+			return $this->DB->getList("SELECT ID, Name, Fullname, Email, GravatarEmail, Deleteable, (Admins.Deleteable IS NOT NULL) AS Admin FROM " . USER_TABLE . " LEFT JOIN " . ADMIN_TABLE . " ON Users.ID = Admins.UserID WHERE Suspended=0");
 		}
 		
 		public function getAllSuspendedUsers() {
@@ -202,6 +203,49 @@
 			}
 
 			return false;
+		}
+		
+		//Checks if the current user is an administrator
+		public function checkAdmin(){
+			return (bool) $this->getSession()["isAdmin"];
+		}
+		
+		//Promotes or demotes a user according to the given role(0=user, 1=admin, 2=god)
+		public function changeRole($userID, $role) {
+			$currentUserID = $this->getSession()["ID"];
+			$parameters = Array();
+			$parameters[":userID"] = $userID;
+			if (permissionManager::isSuperior($currentUserID, $userID)) {
+				switch ($role) {
+					case 0:
+						if (permissionManager::isAdmin($userID)&&permissionManager::isDeleteable($userID)) {
+							$this->DB->query("DELETE FROM " . ADMIN_TABLE . " WHERE UserID = :userID", $parameters);
+							return true;
+						} else {
+							return false;
+						}
+					case 1:
+						if (!permissionManager::isAdmin($userID)) {
+							$this->DB->query("INSERT INTO " . ADMIN_TABLE . "(UserID, Deleteable) VALUES (:userID, 1)", $parameters);
+							return true;
+						} else {
+							return false;
+						}
+					case 2:
+						if (!permissionManager::isDeleteable($currentUserID)) {
+							if ($permissionManager::isAdmin($userID)) {
+								$this->DB->query("UPDATE " . ADMIN_TABLE . " SET Deleteable = 0 WHERE UserID = :userID", $parameters);
+							} else {
+								$this->DB->query("INSERT INTO " . ADMIN_TABLE . "(UserID, Deleteable) VALUES (:userID, 0)", $parameters);
+							}
+							return true;
+						} else {
+							return false;
+						}
+				}
+			} else {
+				return false;
+			}
 		}
 	}
 ?>
