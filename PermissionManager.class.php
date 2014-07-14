@@ -3,7 +3,7 @@
 /**
  *	This class handles permissions of users in groups
  */
-abstract class permissionManager
+abstract class PermissionManager
 {
 	private $DB;
 	private $userID;
@@ -11,6 +11,7 @@ abstract class permissionManager
 	/**
 	* Check if the provided role is allowed to perform the action associated with the permission key
 	*/
+	//TODO: Delete or reimplement this method
 	static function check ($context, $permissionKey, $role) {
 		if ($context == "team")
 			return teamPermission::check($permissionKey, $role);
