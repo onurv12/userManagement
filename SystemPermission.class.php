@@ -1,6 +1,6 @@
 <?php
 	
-	abstract class systemPermission {
+	abstract class SystemPermission {
 		// TODO: Implementation
 	}
 ?>

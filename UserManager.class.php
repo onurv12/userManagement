@@ -2,9 +2,9 @@
 	session_start();
 	
 	require_once "../userManagement/config.php";	// TODO: This might be a problem later, we have to solve. I think we should specify, that the user has to migrate some settings into his config file in his root folder.
-	require "../userManagement/permissionManager.class.php";
+	require "../userManagement/PermissionManager.class.php";
 
-	class userManager {
+	class UserManager {
 		// A dbWrapper instance
 		private $DB;
 		private $timezone;
@@ -218,24 +218,24 @@
 			$currentUserID = $this->getSession()["ID"];
 			$parameters = Array();
 			$parameters[":userID"] = $userID;
-			if (permissionManager::isSuperior($currentUserID, $userID)) {
+			if (PermissionManager::isSuperior($currentUserID, $userID)) {
 				switch ($role) {
 					case 0:
-						if (permissionManager::isAdmin($userID)&&permissionManager::isDeleteable($userID)) {
+						if (PermissionManager::isAdmin($userID)&&PermissionManager::isDeleteable($userID)) {
 							$this->DB->query("DELETE FROM " . ADMIN_TABLE . " WHERE UserID = :userID", $parameters);
 							return true;
 						} else {
 							return false;
 						}
 					case 1:
-						if (!permissionManager::isAdmin($userID)) {
+						if (!PermissionManager::isAdmin($userID)) {
 							$this->DB->query("INSERT INTO " . ADMIN_TABLE . "(UserID, Deleteable) VALUES (:userID, 1)", $parameters);
 							return true;
 						} else {
 							return false;
 						}
 					case 2:
-						if (!permissionManager::isDeleteable($currentUserID)) {
+						if (!PermissionManager::isDeleteable($currentUserID)) {
 							if ($permissionManager::isAdmin($userID)) {
 								$this->DB->query("UPDATE " . ADMIN_TABLE . " SET Deleteable = 0 WHERE UserID = :userID", $parameters);
 							} else {

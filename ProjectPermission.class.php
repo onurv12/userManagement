@@ -1,6 +1,6 @@
 <?php
 	
-	abstract class projectPermission {
+	abstract class ProjectPermission {
 		private static $permissions = Array("Director", "Supervisor", "Artist", "Observer");
 
 		public static function atLeast ($atLeastRole, $currentRole) {
