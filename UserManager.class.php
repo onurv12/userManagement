@@ -209,7 +209,7 @@
 		}
 		
 		//Checks if the current user is an administrator
-		public function checkAdmin(){
+		public function checkAdmin() {
 			return (bool) $this->getSession()["isAdmin"];
 		}
 		
@@ -221,7 +221,7 @@
 			if (PermissionManager::isSuperior($currentUserID, $userID)) {
 				switch ($role) {
 					case 0:
-						if (PermissionManager::isAdmin($userID)&&PermissionManager::isDeleteable($userID)) {
+						if (PermissionManager::isAdmin($userID) && PermissionManager::isDeleteable($userID)) {
 							$this->DB->query("DELETE FROM " . ADMIN_TABLE . " WHERE UserID = :userID", $parameters);
 							return true;
 						} else {
@@ -236,10 +236,10 @@
 						}
 					case 2:
 						if (!PermissionManager::isDeleteable($currentUserID)) {
-							if ($permissionManager::isAdmin($userID)) {
+							if (PermissionManager::isAdmin($userID)) {
 								$this->DB->query("UPDATE " . ADMIN_TABLE . " SET Deleteable = 0 WHERE UserID = :userID", $parameters);
 							} else {
-								$this->DB->query("INSERT INTO " . ADMIN_TABLE . "(UserID, Deleteable) VALUES (:userID, 0)", $parameters);
+								$this->DB->query("INSERT INTO " . ADMIN_TABLE . " (UserID, Deleteable) VALUES (:userID, 0)", $parameters);
 							}
 							return true;
 						} else {
