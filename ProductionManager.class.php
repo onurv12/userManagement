@@ -12,6 +12,13 @@
 			return $this->DB->getList("SELECT * FROM " . PROJECT_TABLE);
 		}
 
+		public function getProject ($projectID) {
+			$parameters = array();
+			$parameters[":ProjectID"] = $projectID;
+
+			return $this->DB->getRow("SELECT * FROM " . PROJECT_TABLE . " WHERE ID = :ProjectID", $parameters);
+		}
+
 		public function remove ($projectID) {
 			// TODO: Warning! Remove related data, like uploaded images and so on?
 			$parameters = Array();
