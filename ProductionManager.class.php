@@ -32,7 +32,7 @@
 				return false;
 			
 			$result = $this->DB->getLastInsertId();
-			$this->addUser2Project($director, $this->DB->getLastInsertId(), "Director");
+			$this->addUser2Project($director, $result, "Director");
 			
 			return $result;
 		}
