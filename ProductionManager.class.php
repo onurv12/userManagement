@@ -26,13 +26,22 @@
 
 			$this->DB->query("DELETE FROM " . PROJECT_TABLE . " WHERE ID = :id", $parameters);
 		}
-
-		public function create ($name, $creatorID) {
+		
+		public function createProject($name, $description, $director) {
 			$parameters = Array();
 			$parameters[":name"] = $name;
-
-			$this->DB->query("INSERT INTO " . PROJECT_TABLE . " (Name) VALUES (:name)");
-			$this->addUser2Project($creatorID, $this->DB->getLastInsertID, "Director");
+			
+			if (!array_values($this->DB->getList("SELECT EXISTS(SELECT * FROM " . PROJECT_TABLE . " WHERE Name = :name)", $parameters))[0])
+				return false;
+			$parameters[":description"] = $description;
+			
+			if (!$this->DB->query("INSERT INTO " . PROJECT_TABLE . " (Name, Description, Approved) VALUES (:name, :description, 0)", $parameters))
+				return false;
+			
+			$result = $this->DB->getLastInsertId();
+			$this->addUser2Project($director, $result, "Director");
+			
+			return $result;
 		}
 
 		public function getProjectUsers ($projectID) {
@@ -41,7 +50,7 @@
 			$parameters = Array();
 			$parameters[":projectID"] = $projectID;
 
-			return $this->DB->getList("SELECT UserID, Role FROM " . USERSINPROJECTS_TABLE . " WHERE ProjectID = :projectID");
+			return $this->DB->getList("SELECT UserID, Role FROM " . USERSINPROJECTS_TABLE . " WHERE ProjectID = :projectID", $parameters);
 		}
 
 		public function addUser2Project ($userID, $projectID, $role) {
@@ -50,8 +59,8 @@
 			$parameters[":projectID"] = $projectID;
 			$parameters[":role"] = $role;
 
-			// TODO: CHECL IF USER IS ALREADY IN THIS TEAM
-			$this->DB->query("INSERT INTO " . USERSINPROJECTS_TABLE . " (UserID, ProjectID, Role) VALUES (:userID, :projectID, :role)");
+			// TODO: CHECK IF USER IS ALREADY IN THIS TEAM
+			$this->DB->query("INSERT INTO " . USERSINPROJECTS_TABLE . " (UserID, ProjectID, Role) VALUES (:userID, :projectID, :role)", $parameters);
 		}
 
 		public function changeUserRole ($userID, $projectID, $role) {
