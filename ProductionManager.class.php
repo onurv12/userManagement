@@ -8,17 +8,6 @@
 			$this->DB = $DB;
 		}
 
-		public function getAllProjects () {
-			return $this->DB->getList("SELECT * FROM " . PROJECT_TABLE);
-		}
-
-		public function getProject ($projectID) {
-			$parameters = array();
-			$parameters[":ProjectID"] = $projectID;
-
-			return $this->DB->getRow("SELECT * FROM " . PROJECT_TABLE . " WHERE ID = :ProjectID", $parameters);
-		}
-
 		public function projectExists($projectID) {
 			if ($this->getProject($projectID)) {
 				return true;
@@ -46,7 +35,7 @@
 
 			return $this->DB->query("UPDATE Projects SET Name = :Name, Description = :Description WHERE ID = :ID", $parameters);
 		}
-
+		
 		public function deleteProject ($projectID) {
 			// TODO: Warning! Remove related data, like uploaded images and so on?
 			$parameters = Array();
@@ -120,11 +109,22 @@
 			$this->DB->query("DELETE FROM " . USERSINPROJECTS_TABLE . " WHERE UserID = :userID AND ProjectID = :projectID");
 		}
 
-		// Gets the projects the user is associated with and the roles he/she has // TODO: come up with a better name for this method
+		public function getProject ($projectID) {
+			$parameters = array();
+			$parameters[":ProjectID"] = $projectID;
+
+			return $this->DB->getRow("SELECT * FROM " . PROJECT_TABLE . " WHERE ID = :ProjectID", $parameters);
+		}
+
+		public function getAllProjects () {
+			return $this->DB->getList("SELECT * FROM Projects");
+		}
+		
+		// Gets the projects the user is associated with and the roles he/she has
 		public function getBelongedProjects ($userID) {
 			$parameters = Array();
 			$parameters[":userID"] = $userID;
-			return $this->DB->getList("SELECT Projects.* FROM " . PROJECT_TABLE . " JOIN " . USERSINPROJECTS_TABLE . " ON Projects.ID = UsersInProjects.ProjectID WHERE UserID = :userID", $parameters);
+			return $this->DB->getList("SELECT Projects.*, UsersInProjects.Role FROM " . PROJECT_TABLE . " JOIN " . USERSINPROJECTS_TABLE . " ON Projects.ID = UsersInProjects.ProjectID WHERE UserID = :userID", $parameters);
 		}
 	}
 ?>
