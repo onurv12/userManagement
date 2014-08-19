@@ -117,7 +117,7 @@
 		}
 
 		public function getAllProjects () {
-			return $this->DB->getList("SELECT * FROM Projects");
+			return $this->DB->getList("SELECT *, EXISTS(SELECT ID FROM Projects) AS Role FROM Projects");
 		}
 		
 		// Gets the projects the user is associated with and the roles he/she has
