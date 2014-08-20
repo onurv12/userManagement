@@ -259,5 +259,26 @@
 				return false;
 			}
 		}
+		
+		public function updateUser($userID, $action, $newValue) {
+			$parameters = Array();
+			$parameters[":userID"] = $userID;
+			//$parameters[":action"] = $action;
+			$parameters[":newValue"] = $newValue;
+			switch($action) {
+				case "Email":
+					//TODO: Getting a magical syntax error when I write :action instead of Email. Fixing that would make this method a lot easier and prettier
+					$result = $this->DB->query("UPDATE Users SET Email = :newValue WHERE ID = :userID", $parameters);
+					break;
+				case "GravatarEmail":
+					$result = $this->DB->query("UPDATE Users SET GravatarEmail = :newValue WHERE ID = :userID", $parameters);
+					break;
+			}
+			if($result) {
+				return true;
+			} else {
+				return false;
+			}			
+		}
 	}
 ?>
