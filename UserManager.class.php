@@ -29,7 +29,7 @@
 			$parameters[":password"] = $this->hash($password);
 			
 			// Get the user data
-			$userdata = $this->DB->getRow("SELECT ID, Name, Fullname, Suspended, ".
+			$userdata = $this->DB->getRow("SELECT ID, Name, Fullname, Suspended, PasswordHash".
 			                                      "EXISTS(SELECT " . USER_TABLE . ".ID FROM " . ADMIN_TABLE . " WHERE " . USER_TABLE . ".ID = " . ADMIN_TABLE . ".UserID) AS isAdmin, " . 
 			                                      "EXISTS(SELECT " . USER_TABLE . ".ID FROM " . ADMIN_TABLE . " WHERE " . USER_TABLE . ".ID = " . ADMIN_TABLE . ".UserID AND " . ADMIN_TABLE . ".Deleteable = 1) AS isDeleteable " .
 			                                      "FROM " . USER_TABLE ." WHERE Name = :username AND PasswordHash = :password", $parameters);
@@ -88,6 +88,13 @@
 			$parameters[":username"] = $newUsername; // TODO: html entities?!
 
 			$this->DB->query("UPDATE " . USER_TABLE . " SET Name = :username WHERE ID = :userID");
+		}
+		
+		public function confirmPassword($pass) {
+			$data = Array();
+			$data[":id"] = $this->getSession()["ID"];
+			$pass2 = $this->DB->query("SELECT PasswordHash FROM Users WHERE ID = :id", $data);
+			return $this->hash($pass) == $this->hash($pass2);
 		}
 		
 		public function activateUser ($username) {
@@ -273,6 +280,8 @@
 				case "GravatarEmail":
 					$result = $this->DB->query("UPDATE Users SET GravatarEmail = :newValue WHERE ID = :userID", $parameters);
 					break;
+				case "Password":
+					$result = $this->DB->query("UPDATE Users SET PasswordHash = :newValue WHERE ID = :userID", $parameters);
 			}
 			if($result) {
 				return true;
