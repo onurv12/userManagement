@@ -7,7 +7,7 @@
 		public function __construct ($DB) {
 			$this->DB = $DB;
 		}
-		
+
 		public function deleteProject ($projectID) {
 			// TODO: Warning! Remove related data, like uploaded images and so on?
 			$parameters = Array();
@@ -79,6 +79,13 @@
 			$parameters[":projectID"] = $projectID;
 
 			$this->DB->query("DELETE FROM " . USERSINPROJECTS_TABLE . " WHERE UserID = :userID AND ProjectID = :projectID");
+		}
+
+		public function getProject ($projectID) {
+			$parameters = array();
+			$parameters[":ProjectID"] = $projectID;
+
+			return $this->DB->getRow("SELECT * FROM " . PROJECT_TABLE . " WHERE ID = :ProjectID", $parameters);
 		}
 
 		public function getAllProjects () {
