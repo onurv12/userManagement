@@ -29,7 +29,7 @@
 			$parameters[":password"] = $this->hash($password);
 			
 			// Get the user data
-			$userdata = $this->DB->getRow("SELECT ID, Name, Fullname, Suspended, PasswordHash, ".
+			$userdata = $this->DB->getRow("SELECT Users.*, ".
 			                                      "EXISTS(SELECT " . USER_TABLE . ".ID FROM " . ADMIN_TABLE . " WHERE " . USER_TABLE . ".ID = " . ADMIN_TABLE . ".UserID) AS isAdmin, " . 
 			                                      "EXISTS(SELECT " . USER_TABLE . ".ID FROM " . ADMIN_TABLE . " WHERE " . USER_TABLE . ".ID = " . ADMIN_TABLE . ".UserID AND " . ADMIN_TABLE . ".Deleteable = 1) AS isDeleteable " .
 			                                      "FROM " . USER_TABLE ." WHERE Name = :username AND PasswordHash = :password", $parameters);
