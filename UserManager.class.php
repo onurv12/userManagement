@@ -94,7 +94,7 @@
 			$data = Array();
 			$data[":id"] = $this->getSession()["ID"];
 			$pass2 = $this->DB->query("SELECT PasswordHash FROM Users WHERE ID = :id", $data);
-			return $this->hash($pass) == $this->hash($pass2);
+			return $pass == $pass2;
 		}
 		
 		public function activateUser ($username) {
