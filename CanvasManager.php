@@ -16,6 +16,17 @@
 			return $this->DB->getRow("SELECT * FROM Canvas WHERE ProjectID = :ProjectID AND ID = :CanvasID", $parameters);
 		}
 
+		function addCanvas ($ProjectID, $PositionIndex, $Title, $Description, $Notes) {
+			$parameters = array();
+			$parameters["ProjectID"] = $ProjectID;
+			$parameters["PositionIndex"] = $PositionIndex;
+			$parameters["Title"] = $Title;
+			$parameters["Description"] = $Description;
+			$parameters["Notes"] = $Notes;
+
+			$this->DB->query("INSERT INTO Canvas(ProjectID, PositionIndex, Title, Description, Notes) VALUES(:ProjectID, :PositionIndex, :Title, :Description, :Notes)", $parameters);
+		}
+
 		function removeCanvas ($ProjectID, $CanvasID) {
 			$parameters = array();
 			$parameters[":ProjectID"] = $ProjectID;

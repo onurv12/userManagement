@@ -19,6 +19,14 @@
 			return $this->DB->getRow("SELECT * FROM " . PROJECT_TABLE . " WHERE ID = :ProjectID", $parameters);
 		}
 
+		public function projectExists($projectID) {
+			if ($this->getProject($projectID)) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		public function deleteProject ($projectID) {
 			// TODO: Warning! Remove related data, like uploaded images and so on?
 			$parameters = Array();
