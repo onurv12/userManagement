@@ -16,6 +16,21 @@
 			return $this->DB->getRow("SELECT * FROM Canvas WHERE ProjectID = :ProjectID AND ID = :CanvasID", $parameters);
 		}
 
+		function removeCanvas ($ProjectID, $CanvasID) {
+			$parameters = array();
+			$parameters[":ProjectID"] = $ProjectID;
+			$parameters[":CanvasID"] = $CanvasID;
+
+			return $this->DB->query("DELETE FROM Canvas WHERE ProjectID = :ProjectID AND ID = :CanvasID", $parameters);
+		}
+
+		function removeAll ($ProjectID) {
+			$parameters = array();
+			$parameters[":CanvasID"] = $CanvasID;
+
+			return $this->DB->query("DELETE FROM Canvas WHERE ProjectID = :ProjectID", $parameters);
+		}
+
 		function getPanels ($ProjectID) {
 			$parameters = array();
 			$parameters[":ProjectID"] = $ProjectID;
