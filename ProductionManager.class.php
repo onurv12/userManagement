@@ -27,6 +27,26 @@
 			}
 		}
 
+		public function updateProject ($projectID, $data) {
+			$canvasManager = new CanvasManager($this->DB);
+			// TODO check for permission
+			$this->updateProjectMetaData($projectID, $data);
+			foreach ($data["Panels"] as $panel) {
+				$canvasManager->updatePanel($projectID, $panel);
+				// TODO: Prevent manipulating assets that are assigned to another project...
+				$canvasManager->updateAssets($panel["ID"], $panel["Assets"]);
+			}
+		}
+
+		public function updateProjectMetaData ($projectID, $data) {
+			$parameters = Array();
+			$parameters[":ID"] = $projectID;
+			$parameters[":Name"] = $data["Name"];
+			$parameters[":Description"] = $data["Description"];
+
+			return $this->DB->query("UPDATE Projects SET Name = :Name, Description = :Description WHERE ID = :ID", $parameters);
+		}
+
 		public function deleteProject ($projectID) {
 			// TODO: Warning! Remove related data, like uploaded images and so on?
 			$parameters = Array();

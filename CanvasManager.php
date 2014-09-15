@@ -42,6 +42,36 @@
 			return $this->DB->query("DELETE FROM Canvas WHERE ProjectID = :ProjectID", $parameters);
 		}
 
+		function updatePanel ($ProjectID, $panelData) {
+			$parameters = array();
+			$parameters[":ProjectID"] 		= $ProjectID;
+			$parameters[":ID"] 				= $panelData["ID"];
+			$parameters[":Title"] 			= $panelData["Title"];
+			$parameters[":Description"] 	= $panelData["Description"];
+			$parameters[":Notes"] 			= $panelData["Notes"];
+			$parameters[":PositionIndex"] 	= $panelData["PositionIndex"];
+
+			return $this->DB->query("UPDATE Canvas SET Title = :Title, Description = :Description, Notes = :Notes, PositionIndex = :PositionIndex WHERE ID = :ID AND ProjectID = :ProjectID", $parameters);
+		}
+
+		function updateAssets ($AssetID, $assets) {
+			foreach ($assets as $asset) {
+				$parameters = array();
+				$parameters[":ID"] = $asset["ID"];
+				$parameters[":Index"] = $asset["Index"];
+				$parameters[":top"] = $asset["top"];
+				$parameters[":left"] = $asset["left"];
+				$parameters[":scaleX"] = $asset["scaleX"];
+				$parameters[":scaleY"] = $asset["scaleY"];
+				$parameters[":flipX"] = $asset["flipX"];
+				$parameters[":flipY"] = $asset["flipY"];
+				$parameters[":angle"] = $asset["angle"];
+				//var_dump($parameters);
+				$this->DB->query("UPDATE Asset2Canvas SET `Index` = :Index, top = :top, `left` = :left, scaleX = :scaleX, scaleY = :scaleY, flipX = :flipX, flipY = :flipY, angle = :angle WHERE ID = :ID", $parameters);
+			}
+			
+		}
+
 		function getPanels ($ProjectID) {
 			$parameters = array();
 			$parameters[":ProjectID"] = $ProjectID;
@@ -53,7 +83,7 @@
 			$parameters = array();
 			$parameters[":CanvasID"] = $CanvasID;
 
-			return $this->DB->getList("SELECT * FROM Asset2Canvas JOIN Asset ON Asset2Canvas.AssetID = Asset.ID WHERE Asset2Canvas.CanvasID = :CanvasID ORDER BY Asset2Canvas.Index DESC", $parameters);
+			return $this->DB->getList("SELECT *, Asset2Canvas.ID FROM Asset2Canvas JOIN Asset ON Asset2Canvas.AssetID = Asset.ID WHERE Asset2Canvas.CanvasID = :CanvasID ORDER BY Asset2Canvas.Index DESC", $parameters);
 		}
 	}
 ?>
