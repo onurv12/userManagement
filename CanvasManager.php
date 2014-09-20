@@ -59,14 +59,14 @@
 				$parameters = array();
 				$parameters[":ID"] = $asset["ID"];
 				$parameters[":Index"] = $asset["Index"];
-				$parameters[":top"] = $asset["top"];
-				$parameters[":left"] = $asset["left"];
-				$parameters[":scaleX"] = $asset["scaleX"];
-				$parameters[":scaleY"] = $asset["scaleY"];
+				$parameters[":top"] = floatval($asset["top"]);
+				$parameters[":left"] = floatval($asset["left"]);
+				$parameters[":scaleX"] = floatval($asset["scaleX"]);
+				$parameters[":scaleY"] = floatval($asset["scaleY"]);
 				$parameters[":flipX"] = $asset["flipX"];
 				$parameters[":flipY"] = $asset["flipY"];
-				$parameters[":angle"] = $asset["angle"];
-				//var_dump($parameters);
+				$parameters[":angle"] = $asset["angle"];	
+
 				$this->DB->query("UPDATE Asset2Canvas SET `Index` = :Index, top = :top, `left` = :left, scaleX = :scaleX, scaleY = :scaleY, flipX = :flipX, flipY = :flipY, angle = :angle WHERE ID = :ID", $parameters);
 			}
 			
