@@ -33,7 +33,7 @@
 			$parameters[":Name"] = $data["Name"];
 			$parameters[":Description"] = $data["Description"];
 
-			return $this->DB->query("UPDATE Projects SET Name = :Name, Description = :Description WHERE ID = :ID", $parameters);
+			return $this->DB->query("UPDATE " . PROJECT_TABLE . " SET Name = :Name, Description = :Description WHERE ID = :ID", $parameters);
 		}
 		
 		public function deleteProject ($projectID) {
@@ -117,14 +117,14 @@
 		}
 
 		public function getAllProjects () {
-			return $this->DB->getList("SELECT * FROM Projects");
+			return $this->DB->getList("SELECT * FROM " . PROJECT_TABLE);
 		}
 		
 		// Gets the projects the user is associated with and the roles he/she has
 		public function getBelongedProjects ($userID) {
 			$parameters = Array();
 			$parameters[":userID"] = $userID;
-			return $this->DB->getList("SELECT Projects.*, UsersInProjects.Role FROM " . PROJECT_TABLE . " JOIN " . USERSINPROJECTS_TABLE . " ON Projects.ID = UsersInProjects.ProjectID WHERE UserID = :userID", $parameters);
+			return $this->DB->getList("SELECT " . PROJECT_TABLE . ".*, " . USERSINPROJECTS_TABLE . ".Role FROM " . PROJECT_TABLE . " JOIN " . USERSINPROJECTS_TABLE . " ON Projects.ID = " . USERSINPROJECTS_TABLE . ".ProjectID WHERE UserID = :userID", $parameters);
 		}
 	}
 ?>

@@ -16,7 +16,7 @@
 			$parameters[":userID"] = $userID;
 			$parameters[":projectID"] = $projectID;
 			
-			$result = $DB->getRow("SELECT Role FROM UsersInProjects WHERE UserID = :userID AND ProjectID = :projectID", $parameters);
+			$result = $DB->getRow("SELECT Role FROM " . USERSINPROJECTS_TABLE . " WHERE UserID = :userID AND ProjectID = :projectID", $parameters);
 			if(is_array($result)) {
 				return array_values($result)[0];
 			} else {
